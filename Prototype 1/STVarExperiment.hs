@@ -22,81 +22,32 @@
 module STVarExperiment where
 
 import Data.Generics (Data(..), Typeable(..))	
+
 import Data.Functor.Fixedpoint as DFF
+
 import Data.Traversable as T
+
 import Data.Foldable as DF
+
 import Control.Applicative ((<$>),(<*>),pure,Applicative)
+
 import Data.List.Extras.Pair
 
--- Playing with STVar(STRef)
 import Control.Unification as U
+
 import Control.Unification.Types as UT
+
 import Control.Unification.STVar as ST 
---import Data.STRef
---import Control.Monad.Fix
---import Control.Monad.Trans.Class
---import Control.Monad.Identity as I
-import Control.Monad.Error
 
 import qualified Data.Set as S
+
 import Data.Map as Map
---import Control.Monad.ST
---import Flatten
 
 import Control.Monad.Trans.Except
-import Data.IntMap
 
-import Data.Char
---import Data.List
+import Control.Monad.Error
 
--- |This module defines the type 'FlatTerm'.
-
-type Atom = String
-
-data VariableName = VariableName Int String  deriving (Show, Eq, Ord)
-
-data FlatTerm a = 
-		Struct Atom [a]
-	| Var VariableName
-	|	Wildcard
-	|	Cut Int deriving (Show, Eq, Ord)
-
-{--
-(Struct "a" [(Var $ VariableName 0 "x"), (Wildcard), (Cut 0), (Struct "b" [(Var $ VariableName 0 "y"), (Wildcard), (Cut 1), (Struct "c" [(Var $ VariableName 0 "z"), (Wildcard), (Cut 0), (Struct "d" [])])])])
-
---}
-
-data Prolog = P (Fix FlatTerm) deriving (Show,Eq,Ord)
-
-instance Functor (FlatTerm) where
-	fmap 							= T.fmapDefault
-
-instance Foldable (FlatTerm) where
- 	foldMap 						= T.foldMapDefault
-
-instance Traversable (FlatTerm) where
-  	traverse f (Struct atom x)		=	Struct atom <$> sequenceA (Prelude.map f x)
-  	traverse _ (Var v)				=	pure (Var v)
-  	traverse _ Wildcard				=	pure (Wildcard)
-  	traverse _ (Cut i)				= 	pure (Cut i)
-
-instance Unifiable (FlatTerm) where
-	zipMatch (Struct al ls) (Struct ar rs) = 
-		if (al == ar) && (length ls == length rs) 
-			then Struct al <$> pairWith (\l r -> Right (l,r)) ls rs  		
-			else Nothing
-	zipMatch Wildcard _ = Just Wildcard
-	zipMatch _ Wildcard = Just Wildcard
-	zipMatch (Cut i1) (Cut i2) = if (i1 == i2) 
-		then Just (Cut i1) 
-		else Nothing
-
-instance Applicative (FlatTerm) where
-	pure x 									= 	Struct "" [x] 
-	_ 				<*> 	Wildcard		= 	Wildcard
-	_				<*> 	(Cut i) 		= 	Cut i
-	_				<*>		(Var v)			=	(Var v)
-	(Struct a fs)	<*> 	(Struct b xs) 	= Struct (a ++ b) [f x | f <- fs, x <- xs] 
+import PrologLanguage
 
 variableExtractor :: Fix FlatTerm -> [Fix FlatTerm]
 variableExtractor (Fix x) = case x of
