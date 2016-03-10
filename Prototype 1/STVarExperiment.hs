@@ -114,26 +114,6 @@ makeDict sVarDict =
         Just xx <- UT.lookupVar $ iKey
         return $! (translateFromUTerm sVarDict) xx
 
-
--- | recover the bindings for the variables of the two terms
--- unified from the monad.
-
-makeDicts :: 
-    (Map VariableName (ST.STVar s (FlatTerm)), Map VariableName (ST.STVar s (FlatTerm))) ->
-    ExceptT  (UT.UFailure (FlatTerm) (ST.STVar s (FlatTerm)))
-    (ST.STBinding s) (Map VariableName (Prolog))
-makeDicts (svDict1, svDict2) = do
-  let svDict3 = (svDict1 `Map.union` svDict2)
-  let ivs = Prelude.map UT.UVar . Map.elems $ svDict3
-  applyBindingsAll ivs
-  -- the interface below is dangerous because Map.union is left-biased.
-  -- variables that are duplicated across terms may have different
-  -- bindings because `translateToUTerm` is run separately on each
-  -- term.
-  lift . makeDict $ svDict3
-
-
-
 instance (UT.Variable v, Functor t) => Error (UT.UFailure t v) where {}
 
 test1 ::
