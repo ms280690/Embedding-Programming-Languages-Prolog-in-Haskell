@@ -56,15 +56,6 @@ import Translators
 import TestFunctions
 
 
-stExtract ::
-  ErrorT (UT.UFailure (FlatTerm) (ST.STVar s (FlatTerm)))
-           (ST.STBinding s)
-            (UT.UTerm (FlatTerm) (ST.STVar s (FlatTerm)),
-             Map VariableName (ST.STVar s (FlatTerm)))
-stExtract = do
-	(x, d) <- lift . translateToUTerm $ fix2
-	return (x, d)
-
 goTest :: (Show b) => (forall s . 
 	(ErrorT (UT.UFailure (FlatTerm) (ST.STVar s (FlatTerm)))
            (ST.STBinding s)
