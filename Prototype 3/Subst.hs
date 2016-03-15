@@ -32,6 +32,7 @@ module Subst where
 
 import Prolog
 import CustomSyntax
+import PrologFlat
 import Data.Map as Map
 import Data.Maybe
 import Data.Either

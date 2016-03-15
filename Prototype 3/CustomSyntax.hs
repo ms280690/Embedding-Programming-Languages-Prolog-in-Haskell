@@ -60,7 +60,9 @@ import Control.Monad.Trans.Except
 
 
 import Prolog
+import PrologFlat
 
+{--
 data FTS a = forall a . FV Id | FS Atom [a] deriving (Eq, Show, Ord, Typeable)
 
 newtype Prolog = P (Fix FTS) deriving (Eq, Show, Ord, Typeable)
@@ -98,6 +100,7 @@ instance Variable FTS where
 
 instance BindingMonad FTS where
 	func = 
+--}
 --}
 
 data VariableName = VariableName Int String
