@@ -200,36 +200,6 @@ translateFromUTerm dict uTerm =
     varIdDict = forKV dict Map.empty $ \ k v -> Map.insert (UT.getVarID v) k
 
 
--- | Unify two (E1 a) terms resulting in maybe a dictionary
--- of variable bindings (to terms).
---
--- NB !!!!
--- The current interface assumes that the variables in t1 and t2 are
--- disjoint.  This is likely a mistake that needs fixing
-
-unifyTerms :: Fix FTS -> Fix FTS -> Maybe (Map Id (Prolog))
-unifyTerms t1 t2 = ST.runSTBinding $ do
-  answer <- runExceptT $ unifyTermsX t1 t2
-  return $! either (const Nothing) Just answer
-
--- | Unify two (E1 a) terms resulting in maybe a dictionary
--- of variable bindings (to terms).
---
--- This routine works in the unification monad
-
-unifyTermsX ::
-    Fix FTS -> Fix FTS ->
-    ExceptT  (UT.UFailure (FTS) (ST.STVar s (FTS)))
-        (ST.STBinding s)
-        (Map Id (Prolog))
-unifyTermsX t1 t2 = do
-    (x1,d1) <- lift . translateToUTerm $ t1
-    (x2,d2) <- lift . translateToUTerm $ t2
-    _ <- unify x1 x2
-    makeDicts $ (d1,d2)
-
-
-
 mapWithKeyM :: (Ord k,Applicative m,Monad m)
                => (k -> a -> m b) -> Map k a -> m (Map k b)
 mapWithKeyM = Map.traverseWithKey
