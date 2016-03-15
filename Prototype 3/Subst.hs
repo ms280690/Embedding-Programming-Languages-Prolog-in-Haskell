@@ -34,6 +34,7 @@ import Prolog
 import CustomSyntax
 import PrologFlat
 import VariableHandler
+import Translators
 
 import Data.Map as Map
 import Data.Maybe
