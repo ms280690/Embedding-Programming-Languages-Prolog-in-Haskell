@@ -57,6 +57,18 @@ import VariableHandler
 
 instance (UT.Variable v, Functor t) => Error (UT.UFailure t v) where {}
 
+runTest :: (Show b) => (forall s . 
+  (ErrorT (UT.UFailure (FTS) (ST.STVar s (FTS)))
+           (ST.STBinding s)
+            (UT.UTerm (FTS) (ST.STVar s (FTS)),
+             Map Id (ST.STVar s (FTS))))) -> String
+runTest test = ST.runSTBinding $ do
+  answer <- runErrorT $ test
+  return $! case answer of
+    (Left x)  -> "error: " ++ show x
+    (Right y) -> "ok:    " ++ show y
+
+
 monadicUnification :: (BindingMonad FTS (STVar s FTS) (ST.STBinding s)) => (forall s. (Term -> Term -> ErrorT (UT.UFailure (FTS) (ST.STVar s (FTS)))
            (ST.STBinding s) (UT.UTerm (FTS) (ST.STVar s (FTS)),
             Map Id (ST.STVar s (FTS)))))

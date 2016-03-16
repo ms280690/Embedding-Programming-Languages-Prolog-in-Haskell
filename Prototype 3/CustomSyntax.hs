@@ -240,16 +240,16 @@ instance BindingMonad FTS where
 --     x3 <- U.unify x1 x2
 --     return (x3, d1 `Map.union` d2)
 
-goTest :: (Show b) => (forall s . 
-  (ErrorT (UT.UFailure (FTS) (ST.STVar s (FTS)))
-           (ST.STBinding s)
-            (UT.UTerm (FTS) (ST.STVar s (FTS)),
-             Map Id (ST.STVar s (FTS))))) -> String
-goTest test = ST.runSTBinding $ do
-  answer <- runErrorT $ test
-  return $! case answer of
-    (Left x)  -> "error: " ++ show x
-    (Right y) -> "ok:    " ++ show y
+-- goTest :: (Show b) => (forall s . 
+--   (ErrorT (UT.UFailure (FTS) (ST.STVar s (FTS)))
+--            (ST.STBinding s)
+--             (UT.UTerm (FTS) (ST.STVar s (FTS)),
+--              Map Id (ST.STVar s (FTS))))) -> String
+-- goTest test = ST.runSTBinding $ do
+--   answer <- runErrorT $ test
+--   return $! case answer of
+--     (Left x)  -> "error: " ++ show x
+--     (Right y) -> "ok:    " ++ show y
 
 
 ---------------------------------------------------------------
