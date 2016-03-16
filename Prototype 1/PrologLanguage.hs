@@ -7,8 +7,10 @@ import Control.Applicative ((<$>),(<*>),pure,Applicative)
 import Control.Unification as U
 import Data.List.Extras.Pair
 
+-- | Atoms are represented as Strings.
 type Atom = String
 
+-- | Variables are pairs of value of type Int and name of type String.
 data VariableName = VariableName Int String  deriving (Show, Eq, Ord)
 
 data FlatTerm a = 
