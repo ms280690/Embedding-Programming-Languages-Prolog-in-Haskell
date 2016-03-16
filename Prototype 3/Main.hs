@@ -19,6 +19,7 @@ import System.IO.Error
 
 
 import CustomSyntax
+import SampleTerms
 
 data Command = Fact Clause | Query [Term] | Show | Error | Quit | NoChange
 

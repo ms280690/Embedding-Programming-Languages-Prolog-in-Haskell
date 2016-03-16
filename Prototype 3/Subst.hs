@@ -178,11 +178,11 @@ s1 @@ s2                 = app s1 . s2
 unify t1 t2 = substConvertor (runUnify (monadicUnification t1 t2))
 
 
-varX :: Term
-varX = Var (0,"x")
+-- varX :: Term
+-- varX = Var (0,"x")
 
-varY :: Term
-varY = Var (1,"y")
+-- varY :: Term
+-- varY = Var (1,"y")
 
 
 substConvertor :: [(Id, Prolog)] -> [Subst]
