@@ -35,6 +35,7 @@ import CustomSyntax
 import PrologFlat
 import VariableHandler
 import Translators
+import TestFunctions
 
 import Data.Map as Map
 import Data.Maybe
