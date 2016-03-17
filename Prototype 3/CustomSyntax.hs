@@ -1,7 +1,7 @@
-{-# LANGUAGE  DeriveDataTypeable, 
-              ViewPatterns, 
-              ScopedTypeVariables, 
-              FlexibleInstances, 
+{-# LANGUAGE  DeriveDataTypeable,
+              ViewPatterns,
+              ScopedTypeVariables,
+              FlexibleInstances,
               DefaultSignatures,
               TypeOperators,
               FlexibleContexts,
@@ -15,10 +15,10 @@
               TemplateHaskell,
               RankNTypes,
               AllowAmbiguousTypes,
-              MultiParamTypeClasses, 
+              MultiParamTypeClasses,
               FunctionalDependencies,
               ConstraintKinds,
-              ExistentialQuantification 
+              ExistentialQuantification
               #-}
 
 module CustomSyntax where
@@ -44,8 +44,8 @@ import Control.Unification.Types as UT
 
 
 
-import Data.Traversable as T 
-import Data.Functor 
+import Data.Traversable as T
+import Data.Functor
 import Data.Foldable
 import Control.Applicative
 
@@ -70,38 +70,38 @@ data FTS a = forall a . FV Id | FS Atom [a] deriving (Eq, Show, Ord, Typeable)
 newtype Prolog = P (Fix FTS) deriving (Eq, Show, Ord, Typeable)
 
 unP :: Prolog -> Fix FTS
-unP (P x) = x 
+unP (P x) = x
 
 instance Functor FTS where
-	fmap = T.fmapDefault
+    fmap = T.fmapDefault
 
 instance Foldable FTS where
- 	foldMap = T.foldMapDefault  
+    foldMap = T.foldMapDefault
 
 instance Traversable FTS where
-	traverse f (FS atom xs) = FS atom <$> sequenceA (Prelude.map f xs)
-	traverse _ (FV v) =	pure (FV v)
+    traverse f (FS atom xs) = FS atom <$> sequenceA (Prelude.map f xs)
+    traverse _ (FV v) = pure (FV v)
 
 instance Unifiable FTS where
-	zipMatch (FS al ls) (FS ar rs) = if (al == ar) && (length ls == length rs)
-      				then FS al <$> pairWith (\l r -> Right (l,r)) ls rs
-      				else Nothing
-	zipMatch (FV v1) (FV v2) = if (v1 == v2) then Just (FV v1) 
-		else Nothing
-	zipMatch _ _ = Nothing
+    zipMatch (FS al ls) (FS ar rs) = if (al == ar) && (length ls == length rs)
+                    then FS al <$> pairWith (\l r -> Right (l,r)) ls rs
+                    else Nothing
+    zipMatch (FV v1) (FV v2) = if (v1 == v2) then Just (FV v1)
+        else Nothing
+    zipMatch _ _ = Nothing
 
 instance Applicative FTS where
-	pure x = FS "" [x]
-	(FS a fs) <*> (FS b xs)   = FS (a ++ b) [f x | f <- fs, x <- xs]
-	--other cases
+    pure x = FS "" [x]
+    (FS a fs) <*> (FS b xs)   = FS (a ++ b) [f x | f <- fs, x <- xs]
+    --other cases
 {--
 instance Monad FTS where
-	func = 
+    func =
 instance Variable FTS where
-	func = 
+    func =
 
 instance BindingMonad FTS where
-	func = 
+    func =
 --}
 --}
 
@@ -126,19 +126,19 @@ instance BindingMonad FTS where
 -- variableExtractor (Fix x) = case x of
 --   (FS _ xs)   ->  Prelude.concat $ Prelude.map variableExtractor xs
 --   (FV v)     ->  [Fix $ FV v]
--- --  _       ->  [] 
+-- --  _       ->  []
 
 -- variableIdExtractor :: Fix FTS -> [Id]
 -- variableIdExtractor (Fix x) = case x of
--- 	(FS _ xs) -> Prelude.concat $ Prelude.map variableIdExtractor xs
--- 	(FV v) -> [v]
+--  (FS _ xs) -> Prelude.concat $ Prelude.map variableIdExtractor xs
+--  (FV v) -> [v]
 
 -- {--
 -- variableNameExtractor :: Fix FTS -> [VariableName]
 -- variableNameExtractor (Fix x) = case x of
 --   (FS _ xs) -> Prelude.concat $ Prelude.map variableNameExtractor xs
 --   (FV v)     -> [v]
---   _         -> [] 
+--   _         -> []
 -- --}
 
 -- variableSet :: [Fix FTS] -> S.Set (Fix FTS)
@@ -203,7 +203,7 @@ instance BindingMonad FTS where
 --     return (x3, d1 `Map.union` d2)
 -- {--
 -- goTest test3
--- "ok:    STVar -9223372036854775807 
+-- "ok:    STVar -9223372036854775807
 -- [(VariableName 0 \"x\",STVar -9223372036854775808)]"
 -- --}
 
@@ -222,7 +222,7 @@ instance BindingMonad FTS where
 --     return (x3, d1 `Map.union` d2)
 -- {--
 -- goTest test4
--- "ok:    STVar -9223372036854775807 
+-- "ok:    STVar -9223372036854775807
 -- [(VariableName 0 \"x\",STVar -9223372036854775808)]"
 -- --}
 
@@ -240,7 +240,7 @@ instance BindingMonad FTS where
 --     x3 <- U.unify x1 x2
 --     return (x3, d1 `Map.union` d2)
 
--- goTest :: (Show b) => (forall s . 
+-- goTest :: (Show b) => (forall s .
 --   (ErrorT (UT.UFailure (FTS) (ST.STVar s (FTS)))
 --            (ST.STBinding s)
 --             (UT.UTerm (FTS) (ST.STVar s (FTS)),
@@ -261,13 +261,13 @@ monadicUnify :: Term -> Term -> ErrorT (UT.UFailure (FTS) (ST.STVar s (FTS)))
             (UT.UTerm (FTS) (ST.STVar s (FTS)),
              Map Id (ST.STVar s (FTS)))
 monadicUnify t1 t2 = do
-	let	
-		t1f = termFlattener t1
-		t2f = termFlattener t2
-	(x1,d1) <- lift . translateToUTerm $ t1f
-	(x2,d2) <- lift . translateToUTerm $ t2f
-	x3 <- U.unify x1 x2
-	return (x3, d1 `Map.union` d2)
+    let
+        t1f = termFlattener t1
+        t2f = termFlattener t2
+    (x1,d1) <- lift . translateToUTerm $ t1f
+    (x2,d2) <- lift . translateToUTerm $ t2f
+    x3 <- U.unify x1 x2
+    return (x3, d1 `Map.union` d2)
 
 --}
 
@@ -275,7 +275,7 @@ monadicUnify t1 t2 = do
 
 -- Convert result from monadicUnify to [Subst]
 {--
-goMonadicTest :: (Show b) => (forall s . 
+goMonadicTest :: (Show b) => (forall s .
   (ErrorT (UT.UFailure (FTS) (ST.STVar s (FTS)))
            (ST.STBinding s)
             (UT.UTerm (FTS) (ST.STVar s (FTS)),

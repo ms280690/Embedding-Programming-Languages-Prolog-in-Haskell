@@ -134,25 +134,26 @@ clausesFor a (Db rss) = case dropWhile (\(n,rs) -> n<a) rss of
 {--
 Finding all clauses for a particular head in a database,
 clausesFor "hello" $ foldl addClause emptyDb [((:-) (Struct "hello" []) []), ((:-) (Struct "hello" [Struct "world" []]) []), ((:-) (Struct "hello" []) [Struct "world" []])]
-[hello.,hello(world).,hello:-world.] 
-      
+[hello.,hello(world).,hello:-world.]
+
 --}
 
 
 addClause :: Database -> Clause -> Database
 addClause (Db rss) r@(Struct a _ :- _)
-           = Db (update rss)
-             where update []            = [(a,[r])]
-                   update (h@(n,rs):rss')
-                          | n==a        = (n,rs++[r]) : rss'
-		          | n<a         = h : update rss'
-                          | otherwise   = (a,[r]) : h : rss'
+    = Db (update rss)
+      where update []            = [(a,[r])]
+            update (h@(n,rs):rss')
+                   | n==a        = (n,rs++[r]) : rss'
+                   | n<a         = h : update rss'
+                   | otherwise   = (a,[r]) : h : rss'
+
 {--
 addClause x ((:-) (Struct "hello" [(Struct "world" [])]) [])
 hello(world).
 
 addClause x ((:-) (Struct "hello" []) [])
-hello.  
+hello.
 
 Adding multiple clauses to a database,
 

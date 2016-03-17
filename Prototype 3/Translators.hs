@@ -1,37 +1,27 @@
 module Translators where
 
-import Data.Functor.Fixedpoint as DFF
-
-import Control.Unification.STVar as ST 
-
-import Data.Map as Map
-
-import Control.Unification as U
-
-import Control.Unification.Types as UT
-
 import Control.Applicative ((<$>),(<*>),pure,Applicative)
-
-import Control.Monad.Trans.Except
-
 import Control.Monad.Error
-
+import Control.Monad.Trans.Except
+import Control.Unification                 as U
+import Control.Unification.STVar           as ST
+import Control.Unification.Types           as UT
+import Data.Functor.Fixedpoint             as DFF
+import Data.Map                            as Map
+import Prolog
 import PrologFlat
-
 import VariableHandler
 
-import Prolog
 
-
-uTermify 
-  :: Map Id (ST.STVar s (FTS)) 
-  -> UTerm FTS (ST.STVar s (FTS)) 
+uTermify
+  :: Map Id (ST.STVar s (FTS))
+  -> UTerm FTS (ST.STVar s (FTS))
   -> UTerm FTS (ST.STVar s (FTS))
 uTermify varMap ux = case ux of
   UT.UVar _             -> ux
   UT.UTerm (FV v)       -> maybe (error "bad map") UT.UVar $ Map.lookup v varMap
  -- UT.UTerm t            -> UT.UTerm $! fmap (uTermify varMap) t
-  UT.UTerm (FS a xs)    -> UT.UTerm $ FS a $! fmap (uTermify varMap) xs   
+  UT.UTerm (FS a xs)    -> UT.UTerm $ FS a $! fmap (uTermify varMap) xs
 
 
 translateToUTerm ::
@@ -59,7 +49,7 @@ vTermify dict t1 = case t1 of
       FV iv   -> t1
       _       -> UT.UTerm . fmap (vTermify dict) $ r
 
-translateFromUTerm :: 
+translateFromUTerm ::
     Map Id (ST.STVar s (FTS)) ->
     UT.UTerm (FTS) (ST.STVar s (FTS)) -> Prolog
 translateFromUTerm dict uTerm =
@@ -73,7 +63,7 @@ mapWithKeyM :: (Ord k,Applicative m,Monad m)
 mapWithKeyM = Map.traverseWithKey
 
 
-makeDict :: 
+makeDict ::
             Map Id (ST.STVar s (FTS)) -> ST.STBinding s (Map Id (Prolog))
 makeDict sVarDict =
     flip mapWithKeyM sVarDict $ \ _ -> \ iKey -> do
@@ -84,7 +74,7 @@ makeDict sVarDict =
 -- | recover the bindings for the variables of the two terms
 -- unified from the monad.
 
-makeDicts :: 
+makeDicts ::
     (Map Id (ST.STVar s (FTS)), Map Id (ST.STVar s (FTS))) ->
     ExceptT  (UT.UFailure (FTS) (ST.STVar s (FTS)))
     (ST.STBinding s) (Map Id (Prolog))

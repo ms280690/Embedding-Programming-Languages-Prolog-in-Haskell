@@ -48,20 +48,21 @@ signOn            = "Mini Prolog Version 1.5g (" ++ version ++ ")\n\n"
 --}
 
 
-main             :: IO ()
-main              = do putStr signOn
-                       putStr ("Reading " ++ stdlib)
-		       clauses <- readLibrary stdlib
-                       interpreter clauses
+main      :: IO ()
+main       = do putStr signOn
+                putStr ("Reading " ++ stdlib)
+                clauses <- readLibrary stdlib
+                interpreter clauses
 
 readLibrary :: [Char] -> IO [Clause]
-readLibrary lib   = do is <- readFile lib
-                       let parse   = map clause (lines is)
-                           clauses = [ r | ((r,""):_) <- parse ]
-                           reading = ['.'| c <- clauses] ++ " done\n"
-                       putStr reading
-		       return clauses
-		    `catchIOError` \err ->
+readLibrary lib   = do
+        is <- readFile lib
+        let parse   = map clause (lines is)
+            clauses = [ r | ((r,""):_) <- parse ]
+            reading = ['.'| c <- clauses] ++ " done\n"
+        putStr reading
+        return clauses
+    `catchIOError` \err ->
                     do putStr "...not found\n"
                        return []
 {--
@@ -70,13 +71,15 @@ do{readLibrary "stdlib.txt"}
  :: IO [Clause]
 --}
 
-stdlib           :: String  
+stdlib           :: String
 stdlib            = "stdlib.txt"
 
 interpreter      :: [Clause] -> IO ()
-interpreter lib   = do is <- getContents
-                       putStr (loop startDb is)
-                    where startDb = foldl addClause emptyDb lib
+interpreter lib   = do
+  is <- getContents
+  putStr (loop startDb is)
+  where startDb = foldl addClause emptyDb lib
+
 {--
 interpreter [((:-) (Struct "hello" []) [(Struct "world" [])]), ((:-) (Struct "hello" []) [])]
 > ??

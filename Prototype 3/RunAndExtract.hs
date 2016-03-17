@@ -1,7 +1,7 @@
-{-# LANGUAGE  DeriveDataTypeable, 
-        ViewPatterns, 
-        ScopedTypeVariables, 
-        FlexibleInstances, 
+{-# LANGUAGE  DeriveDataTypeable,
+        ViewPatterns,
+        ScopedTypeVariables,
+        FlexibleInstances,
         DefaultSignatures,
         TypeOperators,
         FlexibleContexts,
@@ -21,43 +21,28 @@
 
 module RunAndExtract where
 
-import Data.Generics (Data(..), Typeable(..)) 
+import           Control.Applicative ((<$>),(<*>),pure,Applicative)
+import           Control.Monad.Error
+import           Control.Monad.Trans.Except
+import           Control.Unification       as U
+import           Control.Unification.STVar as ST
+import           Control.Unification.Types as UT
+import           Data.Foldable             as DF
+import           Data.Functor.Fixedpoint   as DFF
+import           Data.Generics (Data(..), Typeable(..))
+import           Data.List.Extras.Pair
+import           Data.Map                  as Map
+import qualified Data.Set                  as S
+import           Data.Traversable          as T
+import           Prolog
+import           PrologFlat
+import           Translators
+import           VariableHandler
 
-import Data.Functor.Fixedpoint as DFF
-
-import Data.Traversable as T
-
-import Data.Foldable as DF
-
-import Control.Applicative ((<$>),(<*>),pure,Applicative)
-
-import Data.List.Extras.Pair
-
-import Control.Unification as U
-
-import Control.Unification.Types as UT
-
-import Control.Unification.STVar as ST 
-
-import qualified Data.Set as S
-
-import Data.Map as Map
-
-import Control.Monad.Trans.Except
-
-import Control.Monad.Error
-
-import Prolog
-
-import PrologFlat
-
-import Translators
-
-import VariableHandler
 
 instance (UT.Variable v, Functor t) => Error (UT.UFailure t v) where {}
 
-runTest :: (Show b) => (forall s . 
+runTest :: (Show b) => (forall s .
   (ErrorT (UT.UFailure (FTS) (ST.STVar s (FTS)))
            (ST.STBinding s)
             (UT.UTerm (FTS) (ST.STVar s (FTS)),

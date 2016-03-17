@@ -52,7 +52,7 @@ type Parser a = [Char] -> [(a,[Char])]
 
 -- is == input String
 
-pfail       :: Parser a 
+pfail       :: Parser a
 pfail is     = []
 {--
 papply_CombParse pfail ""
@@ -60,7 +60,7 @@ papply_CombParse pfail ""
 
 --}
 
-okay        :: a -> Parser a  
+okay        :: a -> Parser a
 okay v is    = [(v,is)]
 {--
 papply_CombParse (okay 1) "hello"
@@ -82,7 +82,7 @@ papply_CombParse (tok "hello") "helloworld"
 [("hello","world")]
 --}
 
-sat         :: (Char -> Bool) -> Parser Char 
+sat         :: (Char -> Bool) -> Parser Char
 sat p []     = []
 sat p (c:is) = [ (c,is) | p c ]
 {--
@@ -92,7 +92,7 @@ papply_CombParse (sat isAlpha) "helloworld"
 papply_CombParse (sat isAlpha) "1helloworld"
 []
 --}
-	
+
 
 --- Parser combinators:
 
@@ -121,7 +121,7 @@ papply_CombParse (sat isAlpha) "1helloworld"
 --                separators parsed using the parser s.
 
 
-orelse             :: Parser a -> Parser a -> Parser a 
+orelse             :: Parser a -> Parser a -> Parser a
 (p1 `orelse` p2) is = p1 is ++ p2 is
 {--
 papply_CombParse ((sat isDigit) `orelse` (sat isAlphaNum)) "1helloworld"
@@ -130,7 +130,7 @@ papply_CombParse ((sat isDigit) `orelse` (sat isAlphaNum)) "1helloworld"
 papply_CombParse ((sat isDigit) `orelse` (sat isAlphaNum)) "helloworld"
 [('h',"elloworld")]
 
---} 
+--}
 
 pseq               :: Parser a -> Parser b -> Parser (a,b)
 (p1 `pseq` p2) is   = [((v1,v2),is2) | (v1,is1) <- p1 is, (v2,is2) <- p2 is1]
@@ -146,11 +146,11 @@ In this example the first parser (sat isDigit) fails, hence we get an empty list
 papply_CombParse ((sat isDigit) `pseq` (sat isAlphaNum)) "1helloworld"
 [(('1','h'),"elloworld")]
 The first pair is the digit and the next one with the left over input string is
-a character. 
+a character.
 
 --}
 
-pam                :: Parser a -> (a -> b) -> Parser b 
+pam                :: Parser a -> (a -> b) -> Parser b
 (p `pam` f) is      = [(f v, is1) | (v,is1) <- p is]
 {--
 papply_CombParse ((sat isAlpha) `pam` (toUpper)) "hello"

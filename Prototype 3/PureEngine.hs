@@ -12,7 +12,7 @@ import Subst
 import Interact
 import Data.List(nub)
 
-version = "tree based" 
+version = "tree based"
 
 --- Calculation of solutions:
 
@@ -21,7 +21,7 @@ version = "tree based"
 --         is the required substitution
 -- or:     a choice between a number of subtrees ts, each corresponding to a
 --         proof of a subgoal of the current goal, represented by Choice ts.
---         The proof tree corresponding to an unsolvable goal is Choice [] 
+--         The proof tree corresponding to an unsolvable goal is Choice []
 
 data Prooftree = Done Subst  |  Choice [Prooftree]
 
@@ -30,16 +30,16 @@ data Prooftree = Done Subst  |  Choice [Prooftree]
 prooftree   :: Database -> Int -> Subst -> [Term] -> Prooftree
 prooftree db = pt
  where pt           :: Int -> Subst -> [Term] -> Prooftree
-       pt n s []     = Done s 													-- Rule 1
+       pt n s []     = Done s                                                   -- Rule 1
        pt n s (g:gs) = Choice [ pt (n+1) (u@@s) (map (app u) (tp++gs))
-                              | (tm:-tp)<-renClauses db n g, u<-unify g tm ]	-- Rule 2
+                              | (tm:-tp)<-renClauses db n g, u<-unify g tm ]    -- Rule 2
 {--
 pt 1 nullSubst [] = Done (nullSubst)
 
 pt n s (g:gs)
 
-renClauses :- Rename variables in a clause, the parameters are the database, an int (X_1 will become X_2 if 2 is passed) and a goal term 
-			(head of list) resulting in a clause.
+renClauses :- Rename variables in a clause, the parameters are the database, an int (X_1 will become X_2 if 2 is passed) and a goal term
+            (head of list) resulting in a clause.
 
 unify :- take the head of the list and and match with head of clause from renClauses to get a list of substitutions.
 
@@ -48,7 +48,7 @@ the new list is formed by replacing the cluase head with its body and applying t
 
 so the new parameters for pt are
 
-(n+1) (the old substitution + the new one from unify) (the list formed after applying the unifier to the (body of head goal + rest of the list)) 
+(n+1) (the old substitution + the new one from unify) (the list formed after applying the unifier to the (body of head goal + rest of the list))
 
 
 Working of a small example
@@ -90,7 +90,7 @@ tp ==> "[] , [] , [world] , [] , "
 -- DFS Function
 -- search performs a depth-first search of a proof tree, producing the list
 -- of solution substitutions as they are encountered.
-search              :: Prooftree -> [Subst] 
+search              :: Prooftree -> [Subst]
 search (Done s)      = [s]
 search (Choice pts)  = [ s | pt <- pts, s <- search pt ]
 
@@ -106,13 +106,11 @@ prove db  = search . prooftree db 1 nullSubst
 
 
 myTest1 db n g = do
-	(tm :- tp) <- renClauses db n g
-	u<-unify g tm
-	(show tp) ++ " , "
-	show "\n"
+    (tm :- tp) <- renClauses db n g
+    u<-unify g tm
+    (show tp) ++ " , "
+    show "\n"
 
 
 -----------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------
-
-
