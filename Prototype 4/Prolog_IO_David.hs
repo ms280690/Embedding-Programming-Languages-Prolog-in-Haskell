@@ -8,7 +8,7 @@ import System.IO
 
 data PrologResult
    = NoResult
-   | Cons OneBinding PrologResult 
+   | Cons OneBinding PrologResult
    | IOIn (IO String) (String -> PrologResult)
    | IOOut (IO ()) PrologResult
 
@@ -17,59 +17,59 @@ data PrologResult
 data OneBinding = Pair VariableName VariableName
 
 
---data MiniLang a = MyData a | Empty | Input   
+--data MiniLang a = MyData a | Empty | Input
 
 --runInIO :: PrologResult -> IO [OneBinding]
 
 
-data PrologIO a = Input (IO a) | Output (a -> IO ()) | PrologData a | Empty 
---				deriving (Show, Eq, Ord)
+data PrologIO a = Input (IO a) | Output (a -> IO ()) | PrologData a | Empty
+--              deriving (Show, Eq, Ord)
 {--
 instance Functor (PrologIO) where
-	fmap f Empty 					= Empty
-	fmap f (Input (IO a)) 			= Input (IO (f a))
---	fmap f (Output (a -> IO ()))	= Output (a -> IO ())
---	fmap f (PrologData a)			= PrologData (f a)
+    fmap f Empty                    = Empty
+    fmap f (Input (IO a))           = Input (IO (f a))
+--  fmap f (Output (a -> IO ()))    = Output (a -> IO ())
+--  fmap f (PrologData a)           = PrologData (f a)
 --}
 
 instance Monad PrologIO where
-	 	return a = PrologData a
---	 	(Input i) >>= (Output o) = i >>= (\a -> (o a))
+        return a = PrologData a
+--      (Input i) >>= (Output o) = i >>= (\a -> (o a))
 
 instance (Show a) => Show (PrologIO a) where
-	show (Empty) 		= show "No result"
-	show (PrologData a) = show a
---	show (Input f)		= show (f ++ "")
---	show (Output )		
+    show (Empty)        = show "No result"
+    show (PrologData a) = show a
+--  show (Input f)      = show (f ++ "")
+--  show (Output )
 
 
 -- (>>=) Action sequencer and combiner :- read -> write -> read -> write -> ........
 seqio :: PrologIO a -> (a -> PrologIO b) -> PrologIO b
---      (First action   (Take and perform                       
+--      (First action   (Take and perform
 --      which generates  next action)
---      value a) 
-seqio (PrologData a) 	f 	= f a
---seqio (Output o) 		f 	= \a -> o a
---seqio (Input i)    		f 	= \s -> (seqio (i s) f) --				Get (\s -> seqio (g s) f)
+--      value a)
+seqio (PrologData a)    f   = f a
+--seqio (Output o)      f   = \a -> o a
+--seqio (Input i)           f   = \s -> (seqio (i s) f) --              Get (\s -> seqio (g s) f)
 
 
 
 {--
 instance Applicative PrologIO where
-	func =
+    func =
 
 instance Traversable PrologIO where
-	traverse f Empty 					= Empty
-	traverse f (Input (IO a)) 			= Input (IO (f a))
-	traverse f (Output (a -> IO ()))	= Output ((a) -> IO ())
-	traverse f (PrologData a)			= PrologData (f a)
+    traverse f Empty                    = Empty
+    traverse f (Input (IO a))           = Input (IO (f a))
+    traverse f (Output (a -> IO ()))    = Output ((a) -> IO ())
+    traverse f (PrologData a)           = PrologData (f a)
 --}
 
 
 concate :: PrologIO t -> PrologIO t -> IO ()
 concate (Input f1) (Output f2) = do
-	x <- f1
-	f2 x
+    x <- f1
+    f2 x
 {--
 concate (Input getLine) (Output putStrLn)
 Loading package list-extras-0.4.1.4 ... linking ... done.

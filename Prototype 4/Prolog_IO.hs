@@ -9,16 +9,16 @@ definitions. This Term functor is left-adjoint to the forgetful functor from mon
 to their underlying functors.
 --}
 
-data Term f a = Pure a 
-			  | Impure (f (Term f a))
+data Term f a = Pure a
+              | Impure (f (Term f a))
 
-main 							= undefined
+main                            = undefined
 
 instance Functor f => Functor (Term f) where
-	fmap f (Pure x ) 			= Pure (f x )
-	fmap f (Impure t) 			= Impure (fmap (fmap f ) t)
+    fmap f (Pure x )            = Pure (f x )
+    fmap f (Impure t)           = Impure (fmap (fmap f ) t)
 
 instance Functor f => Monad (Term f) where
-	return x 					= Pure x
-	(Pure x ) 	>>= 	f 		= f x
-	(Impure t) 	>>= 	f 		= Impure (fmap (>>= f ) t)
+    return x                    = Pure x
+    (Pure x )   >>=     f       = f x
+    (Impure t)  >>=     f       = Impure (fmap (>>= f ) t)
