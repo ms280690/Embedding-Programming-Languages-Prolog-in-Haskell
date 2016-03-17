@@ -1,31 +1,25 @@
 module VariableHandler where
 
-import Data.Functor.Fixedpoint as DFF
-
-import qualified Data.Set as S
-
-import Control.Unification.STVar as ST 
-
-import Data.Map as Map
-
-import Control.Unification as U
-
-import Data.Foldable as DF
-
-import PrologLanguage
+import           Data.Functor.Fixedpoint   as DFF
+import qualified Data.Set                  as S
+import           Control.Unification.STVar as ST
+import           Data.Map                  as Map
+import           Control.Unification       as U
+import           Data.Foldable             as DF
+import           PrologLanguage
 
 
 variableExtractor :: Fix FlatTerm -> [Fix FlatTerm]
 variableExtractor (Fix x) = case x of
-	(Struct _ xs) 	->	Prelude.concat $ Prelude.map variableExtractor xs
-	(Var v)			->	[Fix $ Var v]
-	_				->	[] 
+    (Struct _ xs)   ->  Prelude.concat $ Prelude.map variableExtractor xs
+    (Var v)         ->  [Fix $ Var v]
+    _               ->  []
 
 variableNameExtractor :: Fix FlatTerm -> [VariableName]
 variableNameExtractor (Fix x) = case x of
-	(Struct _ xs)	-> Prelude.concat $ Prelude.map variableNameExtractor xs
-	(Var v)			-> [v]
-	_ 				-> []	
+    (Struct _ xs)   -> Prelude.concat $ Prelude.map variableNameExtractor xs
+    (Var v)         -> [v]
+    _               -> []
 
 variableSet :: [Fix FlatTerm] -> S.Set (Fix FlatTerm)
 variableSet a = S.fromList a
